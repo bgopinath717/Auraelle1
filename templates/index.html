@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Auraelle – Luxury Jewelry Catalog</title>
+  <link rel="icon" href="/static/images/logo.jpeg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #c9a96e;
+      --gold-light: #e8d5b0;
+      --gold-dark: #9a7a4a;
+      --rose: #f2c4ce;
+      --blush: #fdf0f3;
+      --white: #ffffff;
+      --text-dark: #2c1810;
+      --text-mid: #6b4f3a;
+      --text-light: #a08060;
+      --shadow: 0 8px 32px rgba(180, 130, 90, 0.15);
+      --shadow-hover: 0 20px 60px rgba(180, 130, 90, 0.25);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--blush);
+      color: var(--text-dark);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Background */
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: url('/static/images/background.jpeg') center/cover no-repeat;
+      opacity: 0.07;
+      filter: blur(2px);
+      pointer-events: none;
+    }
+
+    .bg-gradient {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: radial-gradient(ellipse at 20% 20%, rgba(242,196,206,0.4) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 80%, rgba(201,169,110,0.15) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      height: 70px;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(201,169,110,0.2);
+      box-shadow: 0 2px 20px rgba(180,130,90,0.08);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .nav-logo img {
+      height: 46px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 500;
+      font-size: 0.85rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      text-decoration: none;
+      transition: color 0.3s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--gold);
+      transition: width 0.3s;
+    }
+
+    .nav-links a:hover { color: var(--gold-dark); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 72px 20px 48px;
+    }
+
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: 0.72rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.4rem, 6vw, 4.5rem);
+      font-weight: 300;
+      color: var(--text-dark);
+      line-height: 1.1;
+      letter-spacing: 0.02em;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--gold-dark);
+    }
+
+    .hero-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin: 24px auto;
+      max-width: 300px;
+    }
+
+    .hero-divider::before,
+    .hero-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold-light));
+    }
+
+    .hero-divider::after {
+      background: linear-gradient(to left, transparent, var(--gold-light));
+    }
+
+    .hero-divider span {
+      color: var(--gold);
+      font-size: 1rem;
+    }
+
+    .hero-sub {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      font-weight: 300;
+      letter-spacing: 0.05em;
+    }
+
+    /* FILTERS */
+    .filter-section {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      padding: 0 20px 48px;
+    }
+
+    .filter-btn {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 10px 24px;
+      border-radius: 50px;
+      border: 1.5px solid var(--gold-light);
+      background: transparent;
+      color: var(--text-mid);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--white);
+      box-shadow: 0 4px 16px rgba(201,169,110,0.3);
+    }
+
+    /* PRODUCTS GRID */
+    .products-section {
+      position: relative;
+      z-index: 1;
+      padding: 0 32px 80px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 28px;
+    }
+
+    /* PRODUCT CARD */
+    .product-card {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(8px);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275), box-shadow 0.4s ease;
+      cursor: default;
+      border: 1px solid rgba(255,255,255,0.9);
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .product-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .product-card:hover .card-img img {
+      transform: scale(1.08);
+    }
+
+    .card-img {
+      overflow: hidden;
+      aspect-ratio: 1 / 1;
+      background: var(--blush);
+      position: relative;
+    }
+
+    .card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .card-category {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(255,255,255,0.92);
+      color: var(--gold-dark);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 50px;
+      border: 1px solid rgba(201,169,110,0.3);
+    }
+
+    .card-body {
+      padding: 18px 20px 20px;
+      text-align: center;
+    }
+
+    .card-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--gold-dark);
+      letter-spacing: 0.02em;
+    }
+
+    .card-price span {
+      font-size: 1rem;
+      font-weight: 400;
+      margin-right: 2px;
+    }
+
+    .card-label {
+      font-size: 0.72rem;
+      color: var(--text-light);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .btn-order {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 8px 24px;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+      color: white;
+      text-decoration: none;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: 50px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(201,169,110,0.3);
+    }
+
+    .btn-order:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(201,169,110,0.4);
+    }
+
+    /* EMPTY STATE */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 80px 20px;
+    }
+
+    .empty-state .icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      opacity: 0.4;
+    }
+
+    .empty-state h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      font-weight: 300;
+      color: var(--text-mid);
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+
+    /* FOOTER */
+    footer {
+      position: relative;
+      z-index: 1;
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(201,169,110,0.15);
+      text-align: center;
+      padding: 32px 20px;
+    }
+
+    .footer-logo img {
+      height: 40px;
+      margin-bottom: 12px;
+      opacity: 0.8;
+    }
+
+    footer p {
+      font-size: 0.78rem;
+      color: var(--text-light);
+      letter-spacing: 0.08em;
+    }
+
+    .footer-social {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .footer-social a {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: var(--text-mid);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      transition: color 0.3s;
+    }
+
+    .footer-social a:hover {
+      color: var(--gold-dark);
+    }
+
+    .footer-social svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    footer .gold-line {
+      width: 40px;
+      height: 1px;
+      background: var(--gold-light);
+      margin: 16px auto;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1100px) {
+      .products-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-links { gap: 20px; }
+      .products-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+      .products-section { padding: 0 16px 60px; }
+    }
+
+    @media (max-width: 480px) {
+      .products-grid { grid-template-columns: 1fr; }
+      nav { padding: 0 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .nav-links { display: flex; white-space: nowrap; overflow-x: auto; padding-bottom: 5px; }
+      .nav-links::-webkit-scrollbar { display: none; }
+      .nav-logo img { height: 36px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+<div class="bg-gradient"></div>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="/static/images/logo.jpeg" alt="Auraelle" />
+  </a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="#catalog">Catalog</a></li>
+    <li><a href="javascript:void(0);" onclick="filterProducts('Rings')">Rings</a></li>
+    <li><a href="javascript:void(0);" onclick="filterProducts('Chains')">Chains</a></li>
+    <li><a href="javascript:void(0);" onclick="filterProducts('Bracelets')">Bracelets</a></li>
+    <li><a href="javascript:void(0);" onclick="filterProducts('Earrings')">Earrings</a></li>
+    <li><a href="javascript:void(0);" onclick="filterProducts('Handcuffs')">Handcuffs</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <span class="hero-eyebrow">✦ Luxury Jewelry Collection ✦</span>
+  <h1>Timeless Beauty,<br><em>Curated for You</em></h1>
+  <div class="hero-divider"><span>❋</span></div>
+  <p class="hero-sub">Discover our exquisite handcrafted jewelry catalog</p>
+</section>
+
+<div class="filter-section" id="catalog">
+  <button class="filter-btn active" onclick="filterProducts('All')">All Pieces</button>
+  <button class="filter-btn" onclick="filterProducts('Rings')">Rings</button>
+  <button class="filter-btn" onclick="filterProducts('Chains')">Chains</button>
+  <button class="filter-btn" onclick="filterProducts('Bracelets')">Bracelets</button>
+  <button class="filter-btn" onclick="filterProducts('Earrings')">Earrings</button>
+  <button class="filter-btn" onclick="filterProducts('Handcuffs')">Handcuffs</button>
+</div>
+
+<section class="products-section">
+  <div class="products-grid" id="productsGrid">
+    {% if products %}
+      {% for product in products %}
+      <div class="product-card" data-category="{{ product.category }}">
+        <div class="card-img">
+          <img src="/static/images/{{ product.image }}" alt="{{ product.category }}" loading="lazy" />
+          <span class="card-category">{{ product.category }}</span>
+        </div>
+        <div class="card-body">
+          <div class="card-price"><span>₹</span>{{ product.price }}</div>
+          <div class="card-label">{{ product.category }}</div>
+          <a href="https://www.instagram.com/_auraelle__?igsh=dmh6d3VscDY2ZGdh" target="_blank" class="btn-order">Order on Instagram</a>
+        </div>
+      </div>
+      {% endfor %}
+      
+      <div class="empty-state" id="noResultsState" style="display: none;">
+        <div class="icon">✨</div>
+        <h3 id="noResultsTitle">Category Coming Soon</h3>
+        <p>Our curated pieces for this category are currently being prepared.</p>
+      </div>
+
+    {% else %}
+      <div class="empty-state">
+        <div class="icon">💎</div>
+        <h3>Collection Coming Soon</h3>
+        <p>Our curated pieces are being prepared for you</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">
+    <img src="/static/images/logo.jpeg" alt="Auraelle" />
+  </div>
+  <div class="footer-social">
+    <a href="https://www.instagram.com/_auraelle__?igsh=dmh6d3VscDY2ZGdh" target="_blank">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+      </svg>
+      Instagram
+    </a>
+  </div>
+  <div class="gold-line"></div>
+  <p>© 2026 Auraelle · All Rights Reserved · Luxury Jewelry Catalog</p>
+</footer>
+
+<script>
+  function filterProducts(category) {
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.classList.remove('active');
+      if (category === 'All' && btn.textContent.trim() === 'All Pieces') {
+        btn.classList.add('active');
+      } else if (btn.textContent.trim() === category) {
+        btn.classList.add('active');
+      }
+    });
+
+    const cards = document.querySelectorAll('.product-card');
+    let visibleCount = 0;
+
+    cards.forEach((card, i) => {
+      const match = category === 'All' || card.dataset.category === category;
+      card.style.display = match ? 'block' : 'none';
+      if (match) {
+        visibleCount++;
+        card.style.animationDelay = (i * 0.06) + 's';
+        card.style.animation = 'none';
+        card.offsetHeight;
+        card.style.animation = 'fadeUp 0.4s ease both';
+      }
+    });
+
+    const noResultsState = document.getElementById('noResultsState');
+    if (noResultsState) {
+      if (visibleCount === 0) {
+        noResultsState.style.display = 'block';
+        document.getElementById('noResultsTitle').innerText = category + ' Coming Soon';
+        noResultsState.style.animation = 'none';
+        noResultsState.offsetHeight;
+        noResultsState.style.animation = 'fadeUp 0.4s ease both';
+      } else {
+        noResultsState.style.display = 'none';
+      }
+    }
+  }
+</script>
+</body>
+</html>

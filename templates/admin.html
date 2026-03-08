@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Auraelle – Admin Panel</title>
+  <link rel="icon" href="/static/images/logo.jpeg" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #c9a96e;
+      --gold-light: #e8d5b0;
+      --gold-dark: #9a7a4a;
+      --rose: #f2c4ce;
+      --blush: #fdf0f3;
+      --white: #ffffff;
+      --text-dark: #2c1810;
+      --text-mid: #6b4f3a;
+      --text-light: #a08060;
+      --danger: #e57373;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, var(--blush) 0%, #fff5f7 50%, #fef9f0 100%);
+      min-height: 100vh;
+      color: var(--text-dark);
+    }
+
+    /* NAV */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      height: 70px;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(201,169,110,0.2);
+      box-shadow: 0 2px 20px rgba(180,130,90,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-logo img { height: 46px; }
+    .nav-badge {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 50px;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .nav-link {
+      font-size: 0.82rem;
+      color: var(--text-mid);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      transition: color 0.3s;
+    }
+    .nav-link:hover { color: var(--gold-dark); }
+
+    /* LAYOUT */
+    .admin-layout {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 48px 32px;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    /* UPLOAD PANEL */
+    .upload-panel {
+      background: white;
+      border-radius: 24px;
+      padding: 36px;
+      box-shadow: 0 8px 40px rgba(180,130,90,0.12);
+      border: 1px solid rgba(201,169,110,0.15);
+      position: sticky;
+      top: 90px;
+    }
+
+    .panel-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .panel-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.9rem;
+      font-weight: 400;
+      color: var(--text-dark);
+    }
+
+    .panel-header p {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      margin-top: 6px;
+      letter-spacing: 0.06em;
+    }
+
+    .gold-divider {
+      width: 50px;
+      height: 2px;
+      background: linear-gradient(to right, var(--gold-light), var(--gold));
+      margin: 12px auto;
+      border-radius: 2px;
+    }
+
+    /* IMAGE UPLOAD */
+    .image-upload-zone {
+      border: 2px dashed var(--gold-light);
+      border-radius: 16px;
+      padding: 32px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: var(--blush);
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .image-upload-zone:hover {
+      border-color: var(--gold);
+      background: rgba(242,196,206,0.2);
+    }
+
+    .image-upload-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+    }
+
+    .upload-icon { font-size: 2.5rem; margin-bottom: 10px; }
+
+    .upload-text {
+      font-size: 0.85rem;
+      color: var(--text-mid);
+      font-weight: 500;
+    }
+
+    .upload-hint {
+      font-size: 0.72rem;
+      color: var(--text-light);
+      margin-top: 4px;
+    }
+
+    #previewImg {
+      max-width: 100%;
+      max-height: 160px;
+      border-radius: 10px;
+      object-fit: cover;
+      display: none;
+      margin: 12px auto 0;
+    }
+
+    /* FORM FIELDS */
+    .field-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      margin-bottom: 8px;
+    }
+
+    select, input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid rgba(201,169,110,0.3);
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text-dark);
+      background: white;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      outline: none;
+    }
+
+    select:focus, input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,169,110,0.15);
+    }
+
+    .price-wrapper {
+      position: relative;
+    }
+
+    .price-symbol {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gold-dark);
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .price-wrapper input {
+      padding-left: 30px;
+    }
+
+    /* SUBMIT BTN */
+    .btn-post {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 20px rgba(201,169,110,0.35);
+      margin-top: 8px;
+    }
+
+    .btn-post:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(201,169,110,0.45);
+    }
+
+    .btn-post:active { transform: translateY(0); }
+
+    /* CATALOG PANEL */
+    .catalog-panel h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 400;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+    }
+
+    .catalog-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(201,169,110,0.15);
+    }
+
+    .item-count {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      background: var(--blush);
+      padding: 6px 14px;
+      border-radius: 50px;
+      border: 1px solid var(--gold-light);
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .admin-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(180,130,90,0.1);
+      border: 1px solid rgba(201,169,110,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .admin-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 35px rgba(180,130,90,0.18);
+    }
+
+    .admin-card-img {
+      aspect-ratio: 1;
+      overflow: hidden;
+      background: var(--blush);
+    }
+
+    .admin-card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s;
+    }
+
+    .admin-card:hover img { transform: scale(1.05); }
+
+    .admin-card-body {
+      padding: 14px 16px;
+    }
+
+    .admin-card-cat {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+
+    .admin-card-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .btn-delete {
+      width: 100%;
+      margin-top: 10px;
+      padding: 8px;
+      background: transparent;
+      border: 1px solid rgba(229,115,115,0.3);
+      border-radius: 8px;
+      color: var(--danger);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: all 0.25s;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .btn-delete:hover {
+      background: var(--danger);
+      border-color: var(--danger);
+      color: white;
+    }
+
+    .empty-admin {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 60px;
+      color: var(--text-light);
+    }
+
+    .empty-admin .icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.4; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 1024px) {
+      .admin-layout { grid-template-columns: 1fr; }
+      .upload-panel { position: static; }
+      .admin-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .admin-layout { padding: 24px 16px; }
+      .admin-grid { grid-template-columns: 1fr; }
+      nav { padding: 0 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="/static/images/logo.jpeg" alt="Auraelle" />
+  </a>
+  <div class="nav-right">
+    <a href="/" class="nav-link">← View Store</a>
+    <span class="nav-badge">Owner Panel</span>
+  </div>
+</nav>
+
+<div class="admin-layout">
+
+  <!-- UPLOAD FORM -->
+  <div class="upload-panel">
+    <div class="panel-header">
+      <h2>Add New Piece</h2>
+      <div class="gold-divider"></div>
+      <p>Upload jewelry to the catalog</p>
+    </div>
+
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+      
+      <div class="image-upload-zone" id="uploadZone">
+        <input type="file" name="image" accept="image/*" required onchange="previewImage(this)" />
+        <div class="upload-icon">📷</div>
+        <div class="upload-text">Click to Upload Jewelry Photo</div>
+        <div class="upload-hint">JPG, PNG, WEBP accepted</div>
+        <img id="previewImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="preview" />
+      </div>
+
+      <div class="field-group">
+        <label>Category</label>
+        <select name="category" required>
+          <option value="" disabled selected>Select Category</option>
+          <option value="Rings">Rings</option>
+          <option value="Chains">Chains</option>
+          <option value="Bracelets">Bracelets</option>
+          <option value="Earrings">Earrings</option>
+          <option value="Handcuffs">Handcuffs</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label>Price (₹)</label>
+        <div class="price-wrapper">
+          <span class="price-symbol">₹</span>
+          <input type="number" name="price" placeholder="Enter price" required min="0" step="0.01" />
+        </div>
+      </div>
+
+      <button type="submit" class="btn-post">✦ POST TO CATALOG</button>
+    </form>
+  </div>
+
+  <!-- CATALOG VIEW -->
+  <div class="catalog-panel">
+    <div class="catalog-header">
+      <div>
+        <h2>Current Catalog</h2>
+      </div>
+      <span class="item-count">{{ products|length }} item{% if products|length != 1 %}s{% endif %}</span>
+    </div>
+
+    <div class="admin-grid">
+      {% if products %}
+        {% for product in products %}
+        <div class="admin-card">
+          <div class="admin-card-img">
+            <img src="/static/images/{{ product.image }}" alt="{{ product.category }}" loading="lazy" />
+          </div>
+          <div class="admin-card-body">
+            <div class="admin-card-cat">{{ product.category }}</div>
+            <div class="admin-card-price">₹{{ product.price }}</div>
+            <form action="/delete/{{ loop.index0 }}" method="POST" onsubmit="return confirm('Remove this item?')">
+              <button type="submit" class="btn-delete">Remove from Catalog</button>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-admin">
+          <div class="icon">💍</div>
+          <p>No items yet. Upload your first jewelry piece!</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function previewImage(input) {
+    const preview = document.getElementById('previewImg');
+    const zone = document.getElementById('uploadZone');
+    const icon = zone.querySelector('.upload-icon');
+    const text = zone.querySelector('.upload-text');
+    const hint = zone.querySelector('.upload-hint');
+
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        icon.style.display = 'none';
+        text.style.display = 'none';
+        hint.style.display = 'none';
+      };
+      reader.readAsDataURL(input.files[0]);
+    } else {
+      preview.src = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+      preview.style.display = 'none';
+      icon.style.display = 'block';
+      text.style.display = 'block';
+      hint.style.display = 'block';
+    }
+  }
+</script>
+</body>
+</html>
