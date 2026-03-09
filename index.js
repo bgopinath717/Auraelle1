@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 5000;
 const sql = neon(process.env.DATABASE_URL || 'postgresql://user:pass@host/db');
 
 app.use(cors());
-app.use(express.static('static'));
+app.use('/static', express.static(path.join(__dirname, 'static')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
