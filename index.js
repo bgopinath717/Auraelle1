@@ -4,12 +4,24 @@ const multer = require('multer');
 const path = require('path');
 const cors = require('cors');
 const nunjucks = require('nunjucks');
+
+// Standard node-postgres driver is often safer across neon and vercel directly
 const { neon } = require('@neondatabase/serverless');
 const { put, del } = require('@vercel/blob');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const sql = neon(process.env.DATABASE_URL || 'postgresql://user:pass@host/db');
+
+// The neon driver throws if connection string isn't there, so we log neatly if missing.
+const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.NEON_DATABASE_URL;
+let sql;
+if (connectionString) {
+    sql = neon(connectionString);
+} else {
+    console.warn("WARNING: No Database URL found in environment variables. Database queries will fail.");
+    // Dummy function to prevent immediate crashes, will throw cleanly when called.
+    sql = async () => { throw new Error("No Vercel Database Connection String was configured!"); };
+}
 
 app.use(cors());
 app.use('/static', express.static(path.join(__dirname, 'public', 'static')));
@@ -43,6 +55,8 @@ const upload = multer({
 // Initialize database table if it doesn't exist
 async function initDb() {
     try {
+        if (!connectionString) return;
+        
         await sql`
             CREATE TABLE IF NOT EXISTS products (
                 id SERIAL PRIMARY KEY,
@@ -81,7 +95,7 @@ app.get('/admin', async (req, res) => {
 
 app.post('/upload', upload.single('image'), async (req, res) => {
     if (!req.file) {
-        return res.redirect('/admin');
+        return res.status(400).send("<h1>Upload Failed</h1><p>No image file was received.</p>");
     }
 
     const price = req.body.price || '';
@@ -128,6 +142,7 @@ app.post('/delete/:id', async (req, res) => {
         }
     } catch (error) {
         console.error("Deletion failed:", error);
+        return res.status(500).send(`<h1>Deletion Failed</h1><p>${error.message}</p>`);
     }
     
     res.redirect('/admin');
@@ -146,7 +161,7 @@ app.get('/api/products', async (req, res) => {
 app.use((err, req, res, next) => {
     if (err) {
         console.error("Express Error:", err);
-        return res.status(500).send("An error occurred. Check Vercel logs.");
+        return res.status(500).send(`<h1>Server Error Logged</h1><p>${err.message}</p>`);
     }
     next();
 });
