@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Set up Nunjucks (Jinja2 compatible)
-nunjucks.configure('templates', {
+nunjucks.configure(path.join(__dirname, 'templates'), {
     autoescape: true,
     express: app,
     watch: false
@@ -145,7 +145,7 @@ app.get('/api/products', async (req, res) => {
 app.use((err, req, res, next) => {
     if (err) {
         console.error("Express Error:", err);
-        return res.redirect('/admin');
+        return res.status(500).send("An error occurred. Check Vercel logs.");
     }
     next();
 });
