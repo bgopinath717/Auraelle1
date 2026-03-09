@@ -483,7 +483,7 @@
       {% for product in products %}
       <div class="product-card" data-category="{{ product.category }}">
         <div class="card-img">
-          <img src="/static/images/{{ product.image }}" alt="{{ product.category }}" loading="lazy" />
+          <img src="{{ product.image_url }}" alt="{{ product.category }}" loading="lazy" />
           <span class="card-category">{{ product.category }}</span>
         </div>
         <div class="card-body">

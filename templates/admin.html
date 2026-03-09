@@ -452,12 +452,12 @@
         {% for product in products %}
         <div class="admin-card">
           <div class="admin-card-img">
-            <img src="/static/images/{{ product.image }}" alt="{{ product.category }}" loading="lazy" />
+            <img src="{{ product.image_url }}" alt="{{ product.category }}" loading="lazy" />
           </div>
           <div class="admin-card-body">
             <div class="admin-card-cat">{{ product.category }}</div>
             <div class="admin-card-price">₹{{ product.price }}</div>
-            <form action="/delete/{{ loop.index0 }}" method="POST" onsubmit="return confirm('Remove this item?')">
+            <form action="/delete/{{ product.id }}" method="POST" onsubmit="return confirm('Remove this item?')">
               <button type="submit" class="btn-delete">Remove from Catalog</button>
             </form>
           </div>
