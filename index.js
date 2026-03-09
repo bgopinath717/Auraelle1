@@ -4,11 +4,12 @@ const multer = require('multer');
 const path = require('path');
 const cors = require('cors');
 const nunjucks = require('nunjucks');
-const { sql } = require('@vercel/postgres');
+const { neon } = require('@neondatabase/serverless');
 const { put, del } = require('@vercel/blob');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const sql = neon(process.env.DATABASE_URL || 'postgresql://user:pass@host/db');
 
 app.use(cors());
 app.use('/static', express.static(path.join(__dirname, 'public', 'static')));
@@ -60,7 +61,7 @@ async function initDb() {
 // Routes
 app.get('/', async (req, res) => {
     try {
-        const { rows } = await sql`SELECT * FROM products ORDER BY id DESC;`;
+        const rows = await sql`SELECT * FROM products ORDER BY id DESC;`;
         res.render('index.html', { products: rows });
     } catch (error) {
         console.error("Error fetching products:", error);
@@ -70,7 +71,7 @@ app.get('/', async (req, res) => {
 
 app.get('/admin', async (req, res) => {
     try {
-        const { rows } = await sql`SELECT * FROM products ORDER BY id DESC;`;
+        const rows = await sql`SELECT * FROM products ORDER BY id DESC;`;
         res.render('admin.html', { products: rows });
     } catch (error) {
         console.error("Error fetching products:", error);
@@ -112,7 +113,7 @@ app.post('/delete/:id', async (req, res) => {
     
     try {
         // Find the product first to get the image URL so we can delete the blob
-        const { rows } = await sql`SELECT image_url FROM products WHERE id = ${id};`;
+        const rows = await sql`SELECT image_url FROM products WHERE id = ${id};`;
         
         if (rows.length > 0) {
             const imageUrl = rows[0].image_url;
@@ -134,7 +135,7 @@ app.post('/delete/:id', async (req, res) => {
 
 app.get('/api/products', async (req, res) => {
     try {
-        const { rows } = await sql`SELECT * FROM products ORDER BY id DESC;`;
+        const rows = await sql`SELECT * FROM products ORDER BY id DESC;`;
         res.json(rows);
     } catch (error) {
         console.error("Error fetching products API:", error);
