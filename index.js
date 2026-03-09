@@ -101,6 +101,7 @@ app.post('/upload', upload.single('image'), async (req, res) => {
         
     } catch (error) {
         console.error("Failed to upload image or save to database:", error);
+        return res.status(500).send(`<h1>Upload Failed</h1><p>${error.message}</p><pre>${error.stack}</pre>`);
     }
 
     res.redirect('/admin');
