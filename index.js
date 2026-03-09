@@ -9,7 +9,7 @@ const { put, del } = require('@vercel/blob');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const sql = neon(process.env.DATABASE_URL || 'postgresql://user:pass@host/db');
+const sql = neon(process.env.POSTGRES_URL || 'postgresql://user:pass@host/db');
 
 app.use(cors());
 app.use('/static', express.static(path.join(__dirname, 'static')));
